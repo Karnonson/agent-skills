@@ -149,6 +149,7 @@ fi
 
 # ── Create copilot-instructions.md ───────────────────────────────────────────
 INSTRUCTIONS_FILE="${GITHUB_DIR}/copilot-instructions.md"
+created_instructions=false
 
 if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
   if [[ -f "${INSTRUCTIONS_FILE}" ]]; then
@@ -180,6 +181,7 @@ if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
 - Never: Commit secrets, remove failing tests, skip verification
 EOF
     echo "  ✓  created: .github/copilot-instructions.md"
+    created_instructions=true
   fi
 fi
 
@@ -195,6 +197,15 @@ if [[ "${INSTALL_AGENTS}" == true ]]; then
 fi
 echo ""
 echo "Next steps:"
-echo "  1. Review .github/copilot-instructions.md and tailor it to your project"
-echo "  2. Commit the .github/ additions to your repository"
-echo "  3. In Copilot Chat, agents are available as @<name> (e.g. @code-reviewer)"
+if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
+  if [[ "${created_instructions}" == true ]]; then
+    echo "  1. Review .github/copilot-instructions.md and tailor it to your project"
+  else
+    echo "  1. Keep your existing .github/copilot-instructions.md or update it as needed"
+  fi
+  echo "  2. Commit the .github/ additions to your repository"
+  echo "  3. In Copilot Chat, agents are available as @<name> (e.g. @code-reviewer)"
+else
+  echo "  1. Commit the .github/ additions to your repository"
+  echo "  2. In Copilot Chat, agents are available as @<name> (e.g. @code-reviewer)"
+fi

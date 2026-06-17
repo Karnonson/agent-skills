@@ -72,11 +72,11 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
   exit 1
 fi
-if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]]; then
   echo "ERROR: invalid --repo value '${SOURCE_REPO}' (expected owner/repo)" >&2
   exit 1
 fi
-if [[ ! "${SOURCE_REF}" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+if [[ ! "${SOURCE_REF}" =~ ^[A-Za-z0-9._-]+$ ]]; then
   echo "ERROR: invalid --ref value '${SOURCE_REF}'" >&2
   exit 1
 fi
@@ -101,8 +101,13 @@ if ! curl -fsSL --connect-timeout 30 --max-time 300 "${ARCHIVE_URL}" | tar -xz -
   exit 1
 fi
 
-SRC_ROOT="$(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-if [[ -z "${SRC_ROOT}" || ! -d "${SRC_ROOT}/skills" ]]; then
+mapfile -t extracted_dirs < <(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')
+if [[ ${#extracted_dirs[@]} -ne 1 ]]; then
+  echo "ERROR: expected one extracted top-level directory, found ${#extracted_dirs[@]}" >&2
+  exit 1
+fi
+SRC_ROOT="${TMP_DIR}/${extracted_dirs[0]}"
+if [[ ! -d "${SRC_ROOT}/skills" ]]; then
   echo "ERROR: downloaded archive missing skills directory" >&2
   exit 1
 fi
