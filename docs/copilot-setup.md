@@ -1,6 +1,33 @@
 # Using agent-skills with GitHub Copilot
 
-## Setup
+## Quick Install
+
+Clone this repository and run the installer script from within the target repository:
+
+```bash
+# Clone agent-skills (once)
+git clone https://github.com/addyosmani/agent-skills.git ~/agent-skills
+
+# Install everything into the current repository
+bash ~/agent-skills/scripts/install-for-copilot.sh
+
+# Install into a specific repository
+bash ~/agent-skills/scripts/install-for-copilot.sh ~/projects/my-app
+
+# Install only selected skills (no agents)
+bash ~/agent-skills/scripts/install-for-copilot.sh ~/projects/my-app \
+  --skills test-driven-development,code-review-and-quality \
+  --no-agents
+```
+
+The script:
+- Copies all (or selected) skills to `.github/skills/`
+- Copies agent personas to `.github/agents/` as `*.agent.md` files
+- Creates `.github/copilot-instructions.md` if it does not already exist
+
+Then commit the generated `.github/` files to your repository.
+
+## Setup (Manual)
 
 ### Copilot Instructions
 
