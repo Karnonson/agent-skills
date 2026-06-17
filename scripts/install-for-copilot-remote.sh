@@ -72,7 +72,7 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
   exit 1
 fi
-if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]]; then
+if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9._-]+$ ]]; then
   echo "ERROR: invalid --repo value '${SOURCE_REPO}' (expected owner/repo)" >&2
   exit 1
 fi
@@ -96,12 +96,17 @@ echo "Source repo : ${SOURCE_REPO}@${SOURCE_REF}"
 echo "Target      : ${TARGET_DIR}"
 echo ""
 
-if ! curl -fsSL --connect-timeout 30 --max-time 300 "${ARCHIVE_URL}" | tar -xz -C "${TMP_DIR}"; then
-  echo "ERROR: failed to download and extract archive from ${ARCHIVE_URL}" >&2
+ARCHIVE_FILE="${TMP_DIR}/archive.tar.gz"
+if ! curl -fsSL --connect-timeout 30 --max-time 300 -o "${ARCHIVE_FILE}" "${ARCHIVE_URL}"; then
+  echo "ERROR: failed to download archive from ${ARCHIVE_URL}" >&2
+  exit 1
+fi
+if ! tar -xzf "${ARCHIVE_FILE}" -C "${TMP_DIR}"; then
+  echo "ERROR: failed to extract downloaded archive ${ARCHIVE_FILE}" >&2
   exit 1
 fi
 
-mapfile -t extracted_dirs < <(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')
+mapfile -t extracted_dirs < <(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d | while read -r d; do basename "${d}"; done)
 if [[ ${#extracted_dirs[@]} -ne 1 ]]; then
   echo "ERROR: expected one extracted top-level directory, found ${#extracted_dirs[@]}" >&2
   exit 1
