@@ -57,7 +57,16 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h|--help)
-      sed -n '3,30p' "${BASH_SOURCE[0]}" | sed 's/^# \?//'
+      awk '
+        NR >= 3 {
+          if ($0 ~ /^#/) {
+            sub(/^# ?/, "", $0)
+            print
+            next
+          }
+          exit
+        }
+      ' "${BASH_SOURCE[0]}"
       exit 0
       ;;
     -*)

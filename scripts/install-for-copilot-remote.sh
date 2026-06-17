@@ -81,7 +81,7 @@ AGENTS_DEST="${GITHUB_DIR}/agents"
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
-ARCHIVE_URL="https://codeload.github.com/${SOURCE_REPO}/tar.gz/refs/heads/${SOURCE_REF}"
+ARCHIVE_URL="https://codeload.github.com/${SOURCE_REPO}/tar.gz/${SOURCE_REF}"
 
 echo "agent-skills → GitHub Copilot remote installer"
 echo "Source repo : ${SOURCE_REPO}@${SOURCE_REF}"
@@ -93,8 +93,8 @@ if ! curl -fsSL "${ARCHIVE_URL}" | tar -xz -C "${TMP_DIR}"; then
   exit 1
 fi
 
-SRC_ROOT="${TMP_DIR}/agent-skills-${SOURCE_REF}"
-if [[ ! -d "${SRC_ROOT}/skills" ]]; then
+SRC_ROOT="$(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+if [[ -z "${SRC_ROOT}" || ! -d "${SRC_ROOT}/skills" ]]; then
   echo "ERROR: downloaded archive missing skills directory" >&2
   exit 1
 fi
