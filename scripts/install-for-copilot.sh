@@ -57,16 +57,20 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h|--help)
-      awk '
-        NR >= 2 {
-          if ($0 ~ /^#/) {
-            sub(/^# ?/, "", $0)
-            print
-            next
-          }
-          exit
-        }
-      ' "${BASH_SOURCE[0]}"
+      cat <<'EOF'
+install-for-copilot.sh
+
+Installs agent-skills into a target repository for use with GitHub Copilot.
+
+Usage:
+  bash scripts/install-for-copilot.sh [TARGET_DIR] [--skills skill1,skill2,...] [--no-agents] [--no-instructions]
+
+Arguments:
+  TARGET_DIR              Path to the repository to install into (default: current directory)
+  --skills skill1,...     Comma-separated list of skills to install (default: all)
+  --no-agents             Skip copying agent personas
+  --no-instructions       Skip creating copilot-instructions.md
+EOF
       exit 0
       ;;
     -*)
@@ -107,7 +111,7 @@ mkdir -p "${SKILLS_DEST}"
 if [[ -n "${SELECTED_SKILLS}" ]]; then
   IFS=',' read -ra skill_list <<< "${SELECTED_SKILLS}"
 else
-  mapfile -t skill_list < <(cd "${SKILLS_SRC}" && printf '%s\n' */ | sed 's:/$::')
+  mapfile -t skill_list < <(find "${SKILLS_SRC}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 fi
 
 installed_skills=0

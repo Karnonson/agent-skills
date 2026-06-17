@@ -72,11 +72,11 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
   exit 1
 fi
-if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9._-]+$ ]]; then
+if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_-][A-Za-z0-9._-]*$ ]]; then
   echo "ERROR: invalid --repo value '${SOURCE_REPO}' (expected owner/repo)" >&2
   exit 1
 fi
-if [[ ! "${SOURCE_REF}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+if [[ ! "${SOURCE_REF}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
   echo "ERROR: invalid --ref value '${SOURCE_REF}'" >&2
   exit 1
 fi
@@ -106,7 +106,7 @@ if ! tar -xzf "${ARCHIVE_FILE}" -C "${TMP_DIR}"; then
   exit 1
 fi
 
-mapfile -t extracted_dirs < <(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d | while read -r d; do basename "${d}"; done)
+mapfile -t extracted_dirs < <(find "${TMP_DIR}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 if [[ ${#extracted_dirs[@]} -ne 1 ]]; then
   echo "ERROR: expected one extracted top-level directory, found ${#extracted_dirs[@]}" >&2
   exit 1
@@ -122,7 +122,7 @@ mkdir -p "${SKILLS_DEST}"
 if [[ -n "${SELECTED_SKILLS}" ]]; then
   IFS=',' read -ra skill_list <<< "${SELECTED_SKILLS}"
 else
-  mapfile -t skill_list < <(cd "${SRC_ROOT}/skills" && printf '%s\n' */ | sed 's:/$::')
+  mapfile -t skill_list < <(find "${SRC_ROOT}/skills" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 fi
 
 installed_skills=0
