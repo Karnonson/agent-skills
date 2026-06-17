@@ -2,28 +2,35 @@
 
 ## Quick Install
 
-Clone this repository and run the installer script from within the target repository:
+Run this from the repository where you want Copilot skills installed:
 
 ```bash
-# Clone agent-skills (once)
-git clone https://github.com/addyosmani/agent-skills.git ~/agent-skills
-
 # Install everything into the current repository
-bash ~/agent-skills/scripts/install-for-copilot.sh
-
-# Install into a specific repository
-bash ~/agent-skills/scripts/install-for-copilot.sh ~/projects/my-app
+curl -fsSL https://raw.githubusercontent.com/Karnonson/agent-skills/main/scripts/install-for-copilot-remote.sh | bash
 
 # Install only selected skills (no agents)
-bash ~/agent-skills/scripts/install-for-copilot.sh ~/projects/my-app \
+curl -fsSL https://raw.githubusercontent.com/Karnonson/agent-skills/main/scripts/install-for-copilot-remote.sh | bash -s -- \
   --skills test-driven-development,code-review-and-quality \
   --no-agents
+
+# Install into a specific repository path
+curl -fsSL https://raw.githubusercontent.com/Karnonson/agent-skills/main/scripts/install-for-copilot-remote.sh | bash -s -- \
+  ~/projects/my-app
 ```
 
-The script:
+This command:
 - Copies all (or selected) skills to `.github/skills/`
 - Copies agent personas to `.github/agents/` as `*.agent.md` files
 - Creates `.github/copilot-instructions.md` if it does not already exist
+
+You can also pin a specific ref:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Karnonson/agent-skills/main/scripts/install-for-copilot-remote.sh | bash -s -- \
+  --ref main
+```
+
+For local/offline installs, use `scripts/install-for-copilot.sh` directly from a checked-out copy of this repo.
 
 Then commit the generated `.github/` files to your repository.
 
