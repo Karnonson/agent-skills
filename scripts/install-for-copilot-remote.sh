@@ -84,11 +84,15 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
   exit 1
 fi
-if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_-][A-Za-z0-9._-]*$ ]]; then
+if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
   echo "ERROR: invalid --repo value '${SOURCE_REPO}' (expected owner/repo)" >&2
   exit 1
 fi
 if [[ ! "${SOURCE_REF}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+  echo "ERROR: invalid --ref value '${SOURCE_REF}'" >&2
+  exit 1
+fi
+if [[ "${SOURCE_REF}" == *..* || "${SOURCE_REF}" == *.lock ]]; then
   echo "ERROR: invalid --ref value '${SOURCE_REF}'" >&2
   exit 1
 fi
@@ -173,6 +177,7 @@ fi
 INSTRUCTIONS_FILE="${GITHUB_DIR}/copilot-instructions.md"
 if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
   if [[ -f "${INSTRUCTIONS_FILE}" ]]; then
+    echo ""
     echo "  ⚠  ${INSTRUCTIONS_FILE} already exists — skipping (not overwritten)"
   else
     cat > "${INSTRUCTIONS_FILE}" <<'EOF'

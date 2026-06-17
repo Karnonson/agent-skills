@@ -18,6 +18,8 @@ curl -fsSL https://raw.githubusercontent.com/Karnonson/agent-skills/main/scripts
   ~/projects/my-app
 ```
 
+Security note: review the script URL/content before executing remote scripts in your shell.
+
 This command:
 - Copies all (or selected) skills to `.github/skills/`
 - Copies agent personas to `.github/agents/` as `*.agent.md` files
