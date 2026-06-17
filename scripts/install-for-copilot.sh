@@ -98,7 +98,7 @@ mkdir -p "${SKILLS_DEST}"
 if [[ -n "${SELECTED_SKILLS}" ]]; then
   IFS=',' read -ra skill_list <<< "${SELECTED_SKILLS}"
 else
-  mapfile -t skill_list < <(ls -1 "${SKILLS_SRC}")
+  mapfile -t skill_list < <(for d in "${SKILLS_SRC}"/*/; do basename "${d}"; done)
 fi
 
 installed_skills=0
@@ -109,7 +109,7 @@ for skill in "${skill_list[@]}"; do
   src="${SKILLS_SRC}/${skill}"
   if [[ ! -d "${src}" ]]; then
     echo "  WARN: skill '${skill}' not found in ${SKILLS_SRC} — skipping" >&2
-    ((skipped_skills++)) || true
+    skipped_skills=$((skipped_skills + 1))
     continue
   fi
   dest="${SKILLS_DEST}/${skill}"
@@ -120,7 +120,7 @@ for skill in "${skill_list[@]}"; do
     cp -r "${src}/scripts" "${dest}/"
   fi
   echo "  ✓  skill: ${skill}"
-  ((installed_skills++)) || true
+  installed_skills=$((installed_skills + 1))
 done
 
 # ── Install agent personas ────────────────────────────────────────────────────
@@ -134,7 +134,7 @@ if [[ "${INSTALL_AGENTS}" == true && -d "${AGENTS_SRC}" ]]; then
     dest_file="${AGENTS_DEST}/${base}.agent.md"
     cp "${agent_file}" "${dest_file}"
     echo "  ✓  agent: ${base}.agent.md"
-    ((installed_agents++)) || true
+    installed_agents=$((installed_agents + 1))
   done
 fi
 
