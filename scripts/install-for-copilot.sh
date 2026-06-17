@@ -107,7 +107,7 @@ mkdir -p "${SKILLS_DEST}"
 if [[ -n "${SELECTED_SKILLS}" ]]; then
   IFS=',' read -ra skill_list <<< "${SELECTED_SKILLS}"
 else
-  mapfile -t skill_list < <(for d in "${SKILLS_SRC}"/*/; do basename "${d}"; done)
+  mapfile -t skill_list < <(cd "${SKILLS_SRC}" && printf '%s\n' */ | sed 's:/$::')
 fi
 
 installed_skills=0

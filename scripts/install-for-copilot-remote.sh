@@ -72,6 +72,14 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
   exit 1
 fi
+if [[ ! "${SOURCE_REPO}" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+  echo "ERROR: invalid --repo value '${SOURCE_REPO}' (expected owner/repo)" >&2
+  exit 1
+fi
+if [[ ! "${SOURCE_REF}" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+  echo "ERROR: invalid --ref value '${SOURCE_REF}'" >&2
+  exit 1
+fi
 
 TARGET_DIR="$(cd "${TARGET_DIR}" && pwd)"
 GITHUB_DIR="${TARGET_DIR}/.github"
@@ -88,7 +96,7 @@ echo "Source repo : ${SOURCE_REPO}@${SOURCE_REF}"
 echo "Target      : ${TARGET_DIR}"
 echo ""
 
-if ! curl -fsSL "${ARCHIVE_URL}" | tar -xz -C "${TMP_DIR}"; then
+if ! curl -fsSL --connect-timeout 30 --max-time 300 "${ARCHIVE_URL}" | tar -xz -C "${TMP_DIR}"; then
   echo "ERROR: failed to download and extract archive from ${ARCHIVE_URL}" >&2
   exit 1
 fi
@@ -104,7 +112,7 @@ mkdir -p "${SKILLS_DEST}"
 if [[ -n "${SELECTED_SKILLS}" ]]; then
   IFS=',' read -ra skill_list <<< "${SELECTED_SKILLS}"
 else
-  mapfile -t skill_list < <(for d in "${SRC_ROOT}/skills/"*/; do basename "${d}"; done)
+  mapfile -t skill_list < <(cd "${SRC_ROOT}/skills" && printf '%s\n' */ | sed 's:/$::')
 fi
 
 installed_skills=0

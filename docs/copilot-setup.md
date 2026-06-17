@@ -27,7 +27,7 @@ You can also pin a specific ref:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Karnonson/agent-skills/main/scripts/install-for-copilot-remote.sh | bash -s -- \
-  --ref main
+  --ref v1.0.0
 ```
 
 For local/offline installs, use `scripts/install-for-copilot.sh` directly from a checked-out copy of this repo.
