@@ -45,6 +45,10 @@ INSTALL_INSTRUCTIONS=true
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skills)
+      if [[ $# -lt 2 || "${2:-}" == -* ]]; then
+        echo "ERROR: --skills requires a comma-separated value" >&2
+        exit 1
+      fi
       SELECTED_SKILLS="$2"
       shift 2
       ;;
@@ -184,6 +188,7 @@ if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
 - Ask first: Database schema changes, new dependencies
 - Never: Commit secrets, remove failing tests, skip verification
 EOF
+    chmod 644 "${INSTRUCTIONS_FILE}"
     echo "  ✓  created: .github/copilot-instructions.md"
     created_instructions=true
   fi

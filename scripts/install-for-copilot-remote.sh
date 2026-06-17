@@ -23,6 +23,10 @@ SOURCE_REF="main"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skills)
+      if [[ $# -lt 2 || "${2:-}" == -* ]]; then
+        echo "ERROR: --skills requires a comma-separated value" >&2
+        exit 1
+      fi
       SELECTED_SKILLS="$2"
       shift 2
       ;;
@@ -35,10 +39,18 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --repo)
+      if [[ $# -lt 2 || "${2:-}" == -* ]]; then
+        echo "ERROR: --repo requires owner/repo" >&2
+        exit 1
+      fi
       SOURCE_REPO="$2"
       shift 2
       ;;
     --ref)
+      if [[ $# -lt 2 || "${2:-}" == -* ]]; then
+        echo "ERROR: --ref requires a branch, tag, or commit" >&2
+        exit 1
+      fi
       SOURCE_REF="$2"
       shift 2
       ;;
@@ -187,6 +199,7 @@ if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
 - Ask first: Database schema changes, new dependencies
 - Never: Commit secrets, remove failing tests, skip verification
 EOF
+    chmod 644 "${INSTRUCTIONS_FILE}"
     echo "  ✓  created: .github/copilot-instructions.md"
   fi
 fi
