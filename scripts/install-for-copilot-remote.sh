@@ -89,7 +89,7 @@ echo "Target      : ${TARGET_DIR}"
 echo ""
 
 if ! curl -fsSL "${ARCHIVE_URL}" | tar -xz -C "${TMP_DIR}"; then
-  echo "ERROR: failed downloading ${ARCHIVE_URL}" >&2
+  echo "ERROR: failed to download and extract archive from ${ARCHIVE_URL}" >&2
   exit 1
 fi
 
@@ -143,7 +143,7 @@ fi
 INSTRUCTIONS_FILE="${GITHUB_DIR}/copilot-instructions.md"
 if [[ "${INSTALL_INSTRUCTIONS}" == true ]]; then
   if [[ -f "${INSTRUCTIONS_FILE}" ]]; then
-    echo "  ⚠  ${INSTRUCTIONS_FILE} already exists — skipping"
+    echo "  ⚠  ${INSTRUCTIONS_FILE} already exists — skipping (not overwritten)"
   else
     cat > "${INSTRUCTIONS_FILE}" <<'EOF'
 # Project Coding Standards

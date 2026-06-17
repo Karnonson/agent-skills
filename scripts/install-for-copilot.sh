@@ -58,7 +58,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -h|--help)
       awk '
-        NR >= 3 {
+        NR >= 2 {
           if ($0 ~ /^#/) {
             sub(/^# ?/, "", $0)
             print
@@ -80,11 +80,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-TARGET_DIR="$(cd "${TARGET_DIR}" && pwd)"
-GITHUB_DIR="${TARGET_DIR}/.github"
-SKILLS_DEST="${GITHUB_DIR}/skills"
-AGENTS_DEST="${GITHUB_DIR}/agents"
-
 # ── Validate ──────────────────────────────────────────────────────────────────
 if [[ ! -d "${SKILLS_SRC}" ]]; then
   echo "ERROR: skills directory not found at ${SKILLS_SRC}" >&2
@@ -94,6 +89,11 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
   exit 1
 fi
+
+TARGET_DIR="$(cd "${TARGET_DIR}" && pwd)"
+GITHUB_DIR="${TARGET_DIR}/.github"
+SKILLS_DEST="${GITHUB_DIR}/skills"
+AGENTS_DEST="${GITHUB_DIR}/agents"
 
 echo "agent-skills → GitHub Copilot installer"
 echo "Source : ${REPO_ROOT}"
